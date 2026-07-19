@@ -11,45 +11,375 @@
 <body>
 
 <!-- ================= LOGIN SCREEN ================= -->
-<!-- Filled in by loader.js from partials/login.html -->
-<div id="mount-login"></div>
+<div id="loginScreen">
+  <div class="login-card">
+    <h1>पुणे महानगर डॅशबोर्ड</h1>
+    <div class="sub eng">Authorised Access Only</div>
+    <form id="loginForm">
+      <div class="login-field">
+        <label for="loginEmail">ईमेल</label>
+        <input type="email" id="loginEmail" required autocomplete="username" placeholder="you@example.com">
+      </div>
+      <div class="login-field">
+        <label for="loginPassword">पासवर्ड</label>
+        <div class="pw-wrap">
+          <input type="password" id="loginPassword" required autocomplete="current-password" placeholder="••••••••">
+          <button type="button" class="pw-toggle" id="togglePw">दाखवा</button>
+        </div>
+      </div>
+      <button type="submit" class="login-btn" id="loginBtn">प्रवेश करा</button>
+      <div class="login-error" id="loginError"></div>
+    </form>
+  </div>
+</div>
 
 <!-- ================= DASHBOARD SCREEN ================= -->
 <div id="dashboardScreen">
 
-  <!-- Filled in by loader.js from partials/header.html (header + Jilha toran + tab nav) -->
-  <div id="mount-header"></div>
+  <header>
+    <div class="title-row">
+      <div>
+        <h1>पुणे महानगर डॅशबोर्ड</h1>
+        <div class="sub eng">Pune Mahanagar Dashboard</div>
+      </div>
+      <div class="header-right">
+        <span class="user-chip eng" id="userChip"></span>
+        <button class="logout-btn" id="logoutBtn">Logout</button>
+      </div>
+    </div>
+    <div class="jilha-toran" id="jilhaToran"></div>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button data-tab="overview" class="active">विहंगावलोकन</button>
+    <button data-tab="karyakarini">जिल्हा-नगर-उपनगर कार्यकारिणी</button>
+    <button data-tab="college-karyakarini">College कार्यकारिणी</button>
+    <button data-tab="active-forms">Active Forms</button>
+    <button data-tab="calendar">Membership Calendar</button>
+    <button data-tab="college-list">भाग-wise College List</button>
+    <button data-tab="membership">सदस्यत्व</button>
+    <button data-tab="mahanagar-karya">महानगर उपक्रम</button>
+    <button data-tab="activity-logs">Activity Logs</button>
+  </nav>
 
   <main>
 
-    <!-- Filled in by loader.js from partials/config-note.html -->
-    <div id="mount-config-note"></div>
+    <div class="config-note eng" id="configNote">
+      ⚠️ Google Apps Script URL अजून सेट केलेला नाही — खाली दिसणारा data फक्त preview साठी sample data आहे. <code>api.js</code> मधील <code>SCRIPT_URL</code> मध्ये तुमचा deployed Apps Script Web App URL टाका.
+    </div>
 
-    <!-- Each <section> below is a stable mount point: loader.js fetches
-         the matching partials/panel-*.html file and injects it as this
-         section's inner content. To edit one tab's markup, edit its
-         partial file only — this file (index.html) rarely needs to
-         change. -->
-    <section class="panel active" id="panel-overview"></section>
-    <section class="panel" id="panel-karyakarini"></section>
-    <section class="panel" id="panel-college-karyakarini"></section>
-    <section class="panel" id="panel-active-forms"></section>
-    <section class="panel" id="panel-calendar"></section>
-    <section class="panel" id="panel-college-list"></section>
-    <section class="panel" id="panel-membership"></section>
-    <section class="panel" id="panel-mahanagar-karya"></section>
-    <section class="panel" id="panel-activity-logs"></section>
+    <!-- OVERVIEW -->
+    <section class="panel active" id="panel-overview">
+      <h2 class="section-title">विहंगावलोकन</h2>
+      <p class="section-note eng">Snapshot across all 6 Jilha</p>
+      <div class="stat-grid" id="statGrid"></div>
+      <div class="jilha-bars">
+        <h2 class="section-title" style="font-size:15px;">जिल्हा-निहाय सदस्य संख्या</h2>
+        <div id="jilhaBars"></div>
+      </div>
+    </section>
+
+    <!-- KARYAKARINI -->
+    <section class="panel" id="panel-karyakarini">
+      <h2 class="section-title">जिल्हा → नगर → उपनगर कार्यकारिणी</h2>
+      <p class="section-note eng">Filter by Nagar and Upnagar within the selected Jilha</p>
+      <div class="filter-row">
+        <select id="nagarFilter"><option value="All">सर्व नगर</option></select>
+        <select id="upnagarFilter"><option value="All">सर्व उपनगर</option></select>
+        <select id="karyakariniYearFilter"><option value="All">सर्व शैक्षणिक वर्ष</option></select>
+        <button type="button" class="add-toggle-btn" id="toggleAddKaryakarini">+ नवीन नोंद जोडा</button>
+      </div>
+      <form id="addKaryakariniForm" class="add-form">
+        <div class="grid">
+          <select id="addKJilha" required></select>
+          <select id="addKNagar" required></select>
+          <input type="text" id="addKUpnagar" placeholder="उपनगर">
+          <input type="text" id="addKName" placeholder="नाव" required>
+          <input type="text" id="addKJababdari" placeholder="जबाबदारी" required>
+          <input type="tel" id="addKPhone" placeholder="फोन">
+          <input type="email" id="addKEmail" placeholder="ईमेल">
+          <select id="addKAcademicYear"></select>
+        </div>
+        <button type="submit" class="btn">जतन करा</button>
+        <div class="add-form-msg" id="addKMsg"></div>
+      </form>
+      <div id="karyakariniTableWrap"></div>
+    </section>
+
+    <!-- COLLEGE KARYAKARINI -->
+    <section class="panel" id="panel-college-karyakarini">
+      <h2 class="section-title">College कार्यकारिणी</h2>
+      <p class="section-note eng">Filter by Nagar and College within the chosen Jilha</p>
+      <div class="filter-row">
+        <select id="collegeNagarFilter"><option value="All">सर्व नगर</option></select>
+        <select id="collegeFilterForKaryakarini"><option value="All">सर्व College</option></select>
+        <select id="collegeKaryakariniYearFilter"><option value="All">सर्व शैक्षणिक वर्ष</option></select>
+        <button type="button" class="add-toggle-btn" id="toggleAddCollegeKaryakarini">+ नवीन नोंद जोडा</button>
+      </div>
+      <form id="addCollegeKaryakariniForm" class="add-form">
+        <div class="grid">
+          <select id="addCKJilha" required></select>
+          <select id="addCKNagar" required></select>
+          <input type="text" id="addCKMahavidyalay" placeholder="महाविद्यालय (Mahavidyalay)" required>
+          <input type="text" id="addCKJababdari" placeholder="जबाबदारी (Jababdari)">
+          <input type="text" id="addCKNaav" placeholder="नाव (Naav)" required>
+          <input type="text" id="addCKShikshan" placeholder="शिक्षण (Shikshan)">
+          <input type="tel" id="addCKPhone" placeholder="फोन">
+          <input type="email" id="addCKEmail" placeholder="ईमेल">
+          <select id="addCKAcademicYear"></select>
+        </div>
+        <button type="submit" class="btn">जतन करा</button>
+        <div class="add-form-msg" id="addCKMsg"></div>
+      </form>
+      <div id="collegeKaryakariniTableWrap"></div>
+    </section>
+
+    <!-- ACTIVE FORMS -->
+    <section class="panel" id="panel-active-forms">
+      <h2 class="section-title">Active Forms</h2>
+      <p class="section-note eng">Live registration / event forms for the selected Jilha</p>
+      <div class="filter-row">
+        <button type="button" class="add-toggle-btn" id="toggleAddActiveForm">+ नवीन Form जोडा</button>
+      </div>
+      <form id="addActiveFormForm" class="add-form">
+        <div class="grid">
+          <input type="text" id="addAFName" placeholder="Form Name" required>
+          <select id="addAFJilha" required></select>
+          <input type="date" id="addAFDate" required>
+          <input type="text" id="addAFLink" placeholder="Form Link (URL)">
+          <select id="addAFStatus">
+            <option value="Active">Active</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+            <option value="Postponed">Postponed</option>
+          </select>
+        </div>
+        <button type="submit" class="btn">जतन करा</button>
+        <div class="add-form-msg" id="addAFMsg"></div>
+      </form>
+      <div id="activeFormsWrap"></div>
+    </section>
+
+    <!-- CALENDAR -->
+    <section class="panel" id="panel-calendar">
+      <h2 class="section-title">Membership Time Table</h2>
+      <p class="section-note eng">Pick a date to see which colleges have a membership drive that day (a single day can have multiple colleges)</p>
+      <div class="filter-row">
+        <button type="button" class="add-toggle-btn" id="toggleAddCalendar">+ नवीन नोंद जोडा</button>
+      </div>
+      <form id="addCalendarForm" class="add-form">
+        <div class="grid">
+          <input type="date" id="addCalDate" required>
+          <select id="addCalJilha" required></select>
+          <select id="addCalNagar" required></select>
+          <input type="text" id="addCalCollege" placeholder="College Name" required>
+          <input type="text" id="addCalContact" placeholder="Contact Person">
+          <input type="tel" id="addCalPhone" placeholder="Phone">
+          <select id="addCalStatus">
+            <option value="Scheduled">Scheduled</option>
+            <option value="Completed">Completed</option>
+          </select>
+        </div>
+        <button type="submit" class="btn">जतन करा</button>
+        <div class="add-form-msg" id="addCalMsg"></div>
+      </form>
+      <div class="cal-wrap">
+        <div class="calendar">
+          <div class="cal-head">
+            <button id="prevMonth">‹</button>
+            <div class="month-label eng" id="monthLabel"></div>
+            <button id="nextMonth">›</button>
+          </div>
+          <div class="cal-grid" id="calGrid"></div>
+        </div>
+        <div class="cal-detail">
+          <h3 id="calDetailDate">तारीख निवडा</h3>
+          <div id="calDetailBody"><div class="empty-state">कॅलेंडरमधून एखादी तारीख निवडा</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COLLEGE LIST -->
+    <section class="panel" id="panel-college-list">
+      <h2 class="section-title">भाग-wise College List</h2>
+      <p class="section-note eng">All colleges under the selected Jilha</p>
+      <div class="filter-row">
+        <select id="collegeListJilhaFilter"><option value="All">महानगर</option></select>
+        <select id="collegeListNagarFilter"><option value="All">सर्व नगर</option></select>
+        <button type="button" class="add-toggle-btn" id="toggleAddCollegeList">+ नवीन College जोडा</button>
+      </div>
+      <form id="addCollegeListForm" class="add-form">
+        <div class="grid">
+          <select id="addCLJilha" required></select>
+          <select id="addCLNagar" required></select>
+          <input type="text" id="addCLName" placeholder="College Name" required>
+          <input type="text" id="addCLAddress" placeholder="Address">
+          <input type="text" id="addCLPrincipal" placeholder="Principal">
+          <input type="tel" id="addCLContact" placeholder="Contact">
+        </div>
+        <button type="submit" class="btn">जतन करा</button>
+        <div class="add-form-msg" id="addCLMsg"></div>
+      </form>
+      <div id="collegeListTableWrap"></div>
+    </section>
+
+    <!-- MEMBERSHIP -->
+    <section class="panel" id="panel-membership">
+      <h2 class="section-title">सदस्यत्व</h2>
+      <p class="section-note eng">Add and view membership records for the selected Jilha</p>
+      <div class="filter-row">
+        <select id="membershipJilhaFilter"><option value="All">महानगर</option></select>
+        <select id="membershipNagarFilter"><option value="All">सर्व नगर</option></select>
+        <button type="button" class="add-toggle-btn" id="toggleAddMembership">+ नवीन सदस्यत्व जोडा</button>
+      </div>
+      <form id="addMembershipForm" class="add-form">
+        <input type="hidden" id="addMemEditId" value="">
+        <div class="grid">
+          <input type="date" id="addMemDate" required>
+          <input type="text" id="addMemInstitutionName" placeholder="संस्थेचे नाव (College/School)" required>
+          <select id="addMemInstitutionType">
+            <option value="College">College</option>
+            <option value="School">School</option>
+          </select>
+          <select id="addMemJilha" required></select>
+          <select id="addMemNagar"></select>
+          <input type="number" min="0" id="addMemCount" placeholder="सदस्य संख्या" required>
+          <input type="number" min="0" id="addMemAmount" placeholder="जमा रक्कम (₹)">
+          <input type="text" id="addMemHandledBy" placeholder="जबाबदार व्यक्ती (Handled By)">
+        </div>
+        <button type="submit" class="btn">जतन करा</button>
+        <div class="add-form-msg" id="addMemMsg"></div>
+      </form>
+      <div id="membershipTableWrap"></div>
+    </section>
+
+    <!-- MAHANAGAR UPAKRAM: Pravas / Baithak / Abhiyan -->
+    <section class="panel" id="panel-mahanagar-karya">
+      <h2 class="section-title">महानगर उपक्रम</h2>
+      <p class="section-note eng">Pravas, Baithak &amp; Abhiyan tracking across the Mahanagar</p>
+
+      <nav class="subtabs" id="mahanagarSubtabs">
+        <button data-subtab="pravas" class="active">प्रवास</button>
+        <button data-subtab="baithak">बैठक</button>
+        <button data-subtab="abhiyan">अभियान</button>
+      </nav>
+
+      <div class="filter-row">
+        <select id="mahaJilhaFilter"><option value="All">महानगर</option></select>
+        <select id="mahaNagarFilter"><option value="All">सर्व नगर</option></select>
+      </div>
+
+      <!-- Pravas -->
+      <div class="subpanel active" id="subpanel-pravas">
+        <div class="filter-row">
+          <button type="button" class="add-toggle-btn" id="toggleAddPravas">+ प्रवास जोडा</button>
+        </div>
+        <form id="addPravasForm" class="add-form">
+          <input type="hidden" id="addPravasEditId" value="">
+          <div class="grid">
+            <input type="date" id="addPravasDate" required>
+            <input type="text" id="addPravasPerson" placeholder="Person Name" required>
+            <input type="text" id="addPravasFrom" placeholder="From Place" required>
+            <input type="text" id="addPravasTo" placeholder="To Place" required>
+            <select id="addPravasJilha" required></select>
+            <input type="text" id="addPravasPurpose" placeholder="Purpose">
+            <input type="tel" id="addPravasContact" placeholder="Contact">
+            <select id="addPravasStatus">
+              <option value="Planned">Planned</option>
+              <option value="Completed">Completed</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+            <input type="time" id="addPravasStartTime" placeholder="सुरुवात वेळ">
+            <input type="time" id="addPravasEndTime" placeholder="शेवट वेळ">
+          </div>
+          <button type="submit" class="btn">Add Pravas</button>
+          <div class="add-form-msg" id="addPravasMsg"></div>
+        </form>
+        <div id="pravasTableWrap"></div>
+      </div>
+
+      <!-- Baithak -->
+      <div class="subpanel" id="subpanel-baithak">
+        <div class="filter-row">
+          <button type="button" class="add-toggle-btn" id="toggleAddBaithak">+ बैठक जोडा</button>
+        </div>
+        <form id="addBaithakForm" class="add-form">
+          <input type="hidden" id="addBaithakEditId" value="">
+          <div class="grid">
+            <input type="date" id="addBaithakDate" required>
+            <select id="addBaithakJilha" required></select>
+            <select id="addBaithakNagar"></select>
+            <input type="text" id="addBaithakVishay" placeholder="विषय (Vishay)" required>
+            <input type="text" id="addBaithakSthal" placeholder="स्थळ (Sthal)">
+            <select id="addBaithakStatus">
+              <option value="Planned">Planned</option>
+              <option value="Completed">Completed</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+            <input type="time" id="addBaithakStartTime" placeholder="सुरुवात वेळ">
+            <input type="time" id="addBaithakEndTime" placeholder="शेवट वेळ">
+          </div>
+          <button type="submit" class="btn">जतन करा</button>
+          <div class="add-form-msg" id="addBaithakMsg"></div>
+        </form>
+        <div id="baithakTableWrap"></div>
+      </div>
+
+      <!-- Abhiyan -->
+      <div class="subpanel" id="subpanel-abhiyan">
+        <div class="filter-row">
+          <button type="button" class="add-toggle-btn" id="toggleAddAbhiyan">+ अभियान जोडा</button>
+        </div>
+        <form id="addAbhiyanForm" class="add-form">
+          <input type="hidden" id="addAbhiyanEditId" value="">
+          <div class="grid">
+            <input type="text" id="addAbhiyanName" placeholder="अभियान नाव" required>
+            <select id="addAbhiyanJilha" required></select>
+            <input type="date" id="addAbhiyanStart" required>
+            <input type="date" id="addAbhiyanEnd">
+            <select id="addAbhiyanStatus">
+              <option value="Planned">Planned</option>
+              <option value="Ongoing">Ongoing</option>
+              <option value="Completed">Completed</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+          </div>
+          <button type="submit" class="btn">जतन करा</button>
+          <div class="add-form-msg" id="addAbhiyanMsg"></div>
+        </form>
+        <div id="abhiyanTableWrap"></div>
+      </div>
+    </section>
+
+    <!-- ACTIVITY LOGS -->
+    <section class="panel" id="panel-activity-logs">
+      <h2 class="section-title">Activity Logs</h2>
+      <p class="section-note eng">कोणी काय अ‍ॅड केलं याची अलीकडची यादी (नवीनतम आधी)</p>
+      <div id="activityLogsWrap"></div>
+    </section>
 
   </main>
 
-  <!-- Filled in by loader.js from partials/footer.html -->
-  <div id="mount-footer"></div>
+  <footer>पुणे महानगर डॅशबोर्ड · Internal use only</footer>
 </div>
 
-<!-- loader.js fetches every partials/*.html file above, injects them into
-     their mount points, and only THEN loads api.js / special-day.js /
-     module-*.js / app-core.js (in the required order) — see loader.js
-     for the full explanation of why this two-phase load is necessary. -->
-<script src="loader.js"></script>
+<!-- Script order matters:
+     1. api.js                      — everyone depends on this
+     2. special-day.js              — self-contained calendar module
+     3. module-*.js                 — each defines its tab's load*/setup*Module()
+                                       functions; independent of each other
+     4. app-core.js                 — session/login, tab navigation, and the
+                                       bootstrap that starts the app; must load
+                                       LAST since it calls the functions the
+                                       modules above define -->
+<script src="api.js"></script>
+<script src="special-day.js"></script>
+<script src="module-overview.js"></script>
+<script src="module-karyakarini.js"></script>
+<script src="module-forms-college-list.js"></script>
+<script src="module-membership.js"></script>
+<script src="module-mahanagar-upakram.js"></script>
+<script src="module-activity-logs.js"></script>
+<script src="app-core.js"></script>
 </body>
 </html>
