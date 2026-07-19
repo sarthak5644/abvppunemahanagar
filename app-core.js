@@ -81,27 +81,52 @@ function clearSession() {
   sessionStorage.removeItem(SESSION_KEY);
 }
 function showLogin(message) {
-  document.getElementById("loginScreen").style.display = "flex";
-  document.getElementById("dashboardScreen").style.display = "none";
+  const loginEl = document.getElementById("loginScreen");
+  const dashEl = document.getElementById("dashboardScreen");
+  if (loginEl) loginEl.style.display = "flex";
+  if (dashEl) dashEl.style.display = "none";
   if (message) {
     const errBox = document.getElementById("loginError");
-    errBox.textContent = message;
-    errBox.classList.add("show");
+    if (errBox) {
+      errBox.textContent = message;
+      errBox.classList.add("show");
+    } else {
+      console.error("[app-core] #loginError not found; message was:", message);
+    }
   }
 }
 function showDashboard(user) {
-  document.getElementById("loginScreen").style.display = "none";
-  document.getElementById("dashboardScreen").style.display = "block";
+  const loginEl = document.getElementById("loginScreen");
+  const dashEl = document.getElementById("dashboardScreen");
+  if (loginEl) loginEl.style.display = "none";
+  if (dashEl) dashEl.style.display = "block";
   currentUser = user;
   if (!user.isMahanagar && user.bhag) {
     currentJilha = user.bhag;
   }
   const displayName = user.name || user.email || "—";
-  document.getElementById("userChip").textContent = `${displayName} · ${user.role || ""}`;
+  const userChipEl = document.getElementById("userChip");
+  if (userChipEl) userChipEl.textContent = `${displayName} · ${user.role || ""}`;
   initDashboard();
 }
 
-document.getElementById("loginForm").addEventListener("submit", async (e) => {
+// Null-safe addEventListener: logs an error instead of throwing if the
+// element doesn't exist (e.g. its partial hasn't finished injecting, or a
+// filename typo means it 404'd). This is the fix for a nasty failure mode:
+// a single top-level `document.getElementById(x).addEventListener(...)`
+// throwing would previously stop EVERY statement after it in this file —
+// including the boot() call at the very bottom that shows the login
+// screen — leaving the whole page blank with no visible error to the user.
+function on(id, event, handler) {
+  const el = document.getElementById(id);
+  if (!el) {
+    console.error(`[app-core] Element #${id} not found — its "${event}" handler was not attached. Check that its partial loaded correctly.`);
+    return;
+  }
+  el.addEventListener(event, handler);
+}
+
+on("loginForm", "submit", async (e) => {
   e.preventDefault();
   const email = document.getElementById("loginEmail").value.trim();
   const password = document.getElementById("loginPassword").value;
@@ -120,7 +145,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
   showDashboard(result.user);
 });
 
-document.getElementById("togglePw").addEventListener("click", () => {
+on("togglePw", "click", () => {
   const pw = document.getElementById("loginPassword");
   const btn = document.getElementById("togglePw");
   const show = pw.type === "password";
@@ -128,7 +153,7 @@ document.getElementById("togglePw").addEventListener("click", () => {
   btn.textContent = show ? "लपवा" : "दाखवा";
 });
 
-document.getElementById("logoutBtn").addEventListener("click", async () => {
+on("logoutBtn", "click", async () => {
   await API.logout();
   clearSession();
   dashboardInitDone = false;
@@ -369,15 +394,20 @@ function refreshActivePanel() {
 // everything it needs already in place.
 
 (async function boot() {
-  const existing = getSession();
-  if (existing && existing.token) {
-    API.restoreToken(existing.token);
-    const check = await API.validateSession();
-    if (check && check.valid) {
-      showDashboard(existing.user);
-      return;
+  try {
+    const existing = getSession();
+    if (existing && existing.token) {
+      API.restoreToken(existing.token);
+      const check = await API.validateSession();
+      if (check && check.valid) {
+        showDashboard(existing.user);
+        return;
+      }
+      clearSession();
     }
-    clearSession();
+    showLogin();
+  } catch (err) {
+    console.error("[app-core] boot() failed:", err);
+    showLogin("अनपेक्षित त्रुटी आली. कृपया पान रिफ्रेश करा.");
   }
-  showLogin();
 })();
