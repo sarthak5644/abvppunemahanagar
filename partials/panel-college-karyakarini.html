@@ -1,0 +1,24 @@
+<h2 class="section-title">College कार्यकारिणी</h2>
+<p class="section-note eng">Filter by Nagar and College within the chosen Jilha</p>
+<div class="filter-row">
+  <select id="collegeNagarFilter"><option value="All">सर्व नगर</option></select>
+  <select id="collegeFilterForKaryakarini"><option value="All">सर्व College</option></select>
+  <select id="collegeKaryakariniYearFilter"><option value="All">सर्व शैक्षणिक वर्ष</option></select>
+  <button type="button" class="add-toggle-btn" id="toggleAddCollegeKaryakarini">+ नवीन नोंद जोडा</button>
+</div>
+<form id="addCollegeKaryakariniForm" class="add-form">
+  <div class="grid">
+    <select id="addCKJilha" required></select>
+    <select id="addCKNagar" required></select>
+    <input type="text" id="addCKMahavidyalay" placeholder="महाविद्यालय (Mahavidyalay)" required>
+    <input type="text" id="addCKJababdari" placeholder="जबाबदारी (Jababdari)">
+    <input type="text" id="addCKNaav" placeholder="नाव (Naav)" required>
+    <input type="text" id="addCKShikshan" placeholder="शिक्षण (Shikshan)">
+    <input type="tel" id="addCKPhone" placeholder="फोन">
+    <input type="email" id="addCKEmail" placeholder="ईमेल">
+    <select id="addCKAcademicYear"></select>
+  </div>
+  <button type="submit" class="btn">जतन करा</button>
+  <div class="add-form-msg" id="addCKMsg"></div>
+</form>
+<div id="collegeKaryakariniTableWrap"></div>

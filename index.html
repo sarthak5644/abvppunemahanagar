@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8">
+<title>पुणे महानगर डॅशबोर्ड</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Yantramanav:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ================= LOGIN SCREEN ================= -->
+<!-- Filled in by loader.js from partials/login.html -->
+<div id="mount-login"></div>
+
+<!-- ================= DASHBOARD SCREEN ================= -->
+<div id="dashboardScreen">
+
+  <!-- Filled in by loader.js from partials/header.html (header + Jilha toran + tab nav) -->
+  <div id="mount-header"></div>
+
+  <main>
+
+    <!-- Filled in by loader.js from partials/config-note.html -->
+    <div id="mount-config-note"></div>
+
+    <!-- Each <section> below is a stable mount point: loader.js fetches
+         the matching partials/panel-*.html file and injects it as this
+         section's inner content. To edit one tab's markup, edit its
+         partial file only — this file (index.html) rarely needs to
+         change. -->
+    <section class="panel active" id="panel-overview"></section>
+    <section class="panel" id="panel-karyakarini"></section>
+    <section class="panel" id="panel-college-karyakarini"></section>
+    <section class="panel" id="panel-active-forms"></section>
+    <section class="panel" id="panel-calendar"></section>
+    <section class="panel" id="panel-college-list"></section>
+    <section class="panel" id="panel-membership"></section>
+    <section class="panel" id="panel-mahanagar-karya"></section>
+    <section class="panel" id="panel-activity-logs"></section>
+
+  </main>
+
+  <!-- Filled in by loader.js from partials/footer.html -->
+  <div id="mount-footer"></div>
+</div>
+
+<!-- loader.js fetches every partials/*.html file above, injects them into
+     their mount points, and only THEN loads api.js / special-day.js /
+     module-*.js / app-core.js (in the required order) — see loader.js
+     for the full explanation of why this two-phase load is necessary. -->
+<script src="loader.js"></script>
+</body>
+</html>

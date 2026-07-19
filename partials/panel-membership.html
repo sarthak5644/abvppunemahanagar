@@ -1,0 +1,26 @@
+<h2 class="section-title">सदस्यत्व</h2>
+<p class="section-note eng">Add and view membership records for the selected Jilha</p>
+<div class="filter-row">
+  <select id="membershipJilhaFilter"><option value="All">महानगर</option></select>
+  <select id="membershipNagarFilter"><option value="All">सर्व नगर</option></select>
+  <button type="button" class="add-toggle-btn" id="toggleAddMembership">+ नवीन सदस्यत्व जोडा</button>
+</div>
+<form id="addMembershipForm" class="add-form">
+  <input type="hidden" id="addMemEditId" value="">
+  <div class="grid">
+    <input type="date" id="addMemDate" required>
+    <input type="text" id="addMemInstitutionName" placeholder="संस्थेचे नाव (College/School)" required>
+    <select id="addMemInstitutionType">
+      <option value="College">College</option>
+      <option value="School">School</option>
+    </select>
+    <select id="addMemJilha" required></select>
+    <select id="addMemNagar"></select>
+    <input type="number" min="0" id="addMemCount" placeholder="सदस्य संख्या" required>
+    <input type="number" min="0" id="addMemAmount" placeholder="जमा रक्कम (₹)">
+    <input type="text" id="addMemHandledBy" placeholder="जबाबदार व्यक्ती (Handled By)">
+  </div>
+  <button type="submit" class="btn">जतन करा</button>
+  <div class="add-form-msg" id="addMemMsg"></div>
+</form>
+<div id="membershipTableWrap"></div>
