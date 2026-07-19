@@ -60,7 +60,7 @@
       return;
     }
     try {
-      const res = await fetch(url);
+      const res = await fetch(url, { cache: "no-store" });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       el.innerHTML = await res.text();
     } catch (err) {
@@ -72,7 +72,7 @@
   function loadScript(src) {
     return new Promise((resolve, reject) => {
       const s = document.createElement("script");
-      s.src = src;
+      s.src = src + "?v=" + Date.now();
       s.onload = resolve;
       s.onerror = () => reject(new Error("Failed to load script: " + src));
       document.body.appendChild(s);
