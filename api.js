@@ -19,7 +19,7 @@
    data (useful for designing the frontend before the sheet
    / script is wired up).
 ========================================================= */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzMTVgxGwXK6OkV2wGjTtpHiaP2VqXV0TQqukODDNrwiZf38H2Z2s5BLTAR4RoN4vNw/exec"; // e.g. "https://script.google.com/macros/s/XXXXX/exec"
+ // e.g. "https://script.google.com/macros/s/XXXXX/exec"
 
 /* =========================================================
    API.JS — all communication with the Google Apps Script
@@ -42,6 +42,7 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzMTVgxGwXK6OkV2wGjT
    data (useful for designing the frontend before the sheet
    / script is wired up).
 ========================================================= */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzMTVgxGwXK6OkV2wGjTtpHiaP2VqXV0TQqukODDNrwiZf38H2Z2s5BLTAR4RoN4vNw/exec";
 
 const API = (function () {
 
