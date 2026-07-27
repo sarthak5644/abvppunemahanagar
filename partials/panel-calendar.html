@@ -1,0 +1,35 @@
+<h2 class="section-title">Membership Time Table</h2>
+<p class="section-note eng">Pick a date to see which colleges have a membership drive that day (a single day can have multiple colleges)</p>
+<div class="filter-row">
+  <button type="button" class="add-toggle-btn" id="toggleAddCalendar">+ नवीन नोंद जोडा</button>
+</div>
+<form id="addCalendarForm" class="add-form">
+  <div class="grid">
+    <input type="date" id="addCalDate" required>
+    <select id="addCalJilha" required></select>
+    <select id="addCalNagar" required></select>
+    <input type="text" id="addCalCollege" placeholder="College Name" required>
+    <input type="text" id="addCalContact" placeholder="Contact Person">
+    <input type="tel" id="addCalPhone" placeholder="Phone">
+    <select id="addCalStatus">
+      <option value="Scheduled">Scheduled</option>
+      <option value="Completed">Completed</option>
+    </select>
+  </div>
+  <button type="submit" class="btn">जतन करा</button>
+  <div class="add-form-msg" id="addCalMsg"></div>
+</form>
+<div class="cal-wrap">
+  <div class="calendar">
+    <div class="cal-head">
+      <button id="prevMonth">‹</button>
+      <div class="month-label eng" id="monthLabel"></div>
+      <button id="nextMonth">›</button>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+  </div>
+  <div class="cal-detail">
+    <h3 id="calDetailDate">तारीख निवडा</h3>
+    <div id="calDetailBody"><div class="empty-state">कॅलेंडरमधून एखादी तारीख निवडा</div></div>
+  </div>
+</div>

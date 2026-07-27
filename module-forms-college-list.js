@@ -13,9 +13,11 @@ function setupActiveFormsModule() {
     toggleBtnId: "toggleAddActiveForm", formId: "addActiveFormForm", msgId: "addAFMsg",
     jilhaId: "addAFJilha", action: "addActiveForm",
     fieldMap: { formName: "addAFName", jilha: "addAFJilha", eventDate: "addAFDate", formLink: "addAFLink", status: "addAFStatus" },
+    multiSelectFieldMap: { guestEmails: "addAFNotify" },
     requiredKeys: ["formName", "jilha", "eventDate"],
     onSuccess: () => loadActiveForms()
   });
+  populateNotifyMultiSelect("addAFNotify");
 
   // Membership Calendar's add-form lives on this module too, since it's a
   // single small form and doesn't warrant its own file.
@@ -23,9 +25,11 @@ function setupActiveFormsModule() {
     toggleBtnId: "toggleAddCalendar", formId: "addCalendarForm", msgId: "addCalMsg",
     jilhaId: "addCalJilha", nagarId: "addCalNagar", action: "addMembershipCalendarEntry",
     fieldMap: { date: "addCalDate", jilha: "addCalJilha", nagar: "addCalNagar", college: "addCalCollege", contactPerson: "addCalContact", phone: "addCalPhone", status: "addCalStatus" },
+    multiSelectFieldMap: { guestEmails: "addCalNotify" },
     requiredKeys: ["date", "jilha", "college"],
     onSuccess: () => SpecialDayCalendar.load()
   });
+  populateNotifyMultiSelect("addCalNotify");
 }
 
 async function loadActiveForms() {

@@ -19,7 +19,7 @@
    data (useful for designing the frontend before the sheet
    / script is wired up).
 ========================================================= */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzMTVgxGwXK6OkV2wGjTtpHiaP2VqXV0TQqukODDNrwiZf38H2Z2s5BLTAR4RoN4vNw/exec"; // e.g. "https://script.google.com/macros/s/XXXXX/exec"
+ // e.g. "https://script.google.com/macros/s/XXXXX/exec"
 
 /* =========================================================
    API.JS — all communication with the Google Apps Script
@@ -42,6 +42,7 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzMTVgxGwXK6OkV2wGjT
    data (useful for designing the frontend before the sheet
    / script is wired up).
 ========================================================= */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzMTVgxGwXK6OkV2wGjTtpHiaP2VqXV0TQqukODDNrwiZf38H2Z2s5BLTAR4RoN4vNw/exec";
 
 const API = (function () {
 
@@ -107,6 +108,10 @@ const API = (function () {
     membership: [
       {ID:"demo-m1", Date:"2026-07-09", "Institution Name":"Jalgaon Engineering College", "Institution Type":"College", Jilha:"मध्य पुणे", Nagar:"शिवाजी नगर", "Member Count":42, "Amount Collected":2100, "Handled By":"Gitesh Chavan"},
       {ID:"demo-m2", Date:"2026-07-05", "Institution Name":"MIT कॉलेज ऑफ इंजिनिअरिंग", "Institution Type":"College", Jilha:"कोथरूड", Nagar:"कर्वेनगर", "Member Count":30, "Amount Collected":1500, "Handled By":"Sneha More"}
+    ],
+    notifyPeople: [
+      {ID:"demo-np1", Name:"Sarthak", Email:"sarthakvelapure5644@gmail.com"},
+      {ID:"demo-np2", Name:"Amogh", Email:"amogh4010@gmail.com"}
     ],
     demoUsers: [
       { "Bhag/Jilha":"मध्य पुणे", Name:"Sarthak", Email:"sarthakvelapure5644@gmail.com", Role:"पुणे महानगर कार्यालय मंत्री", Prant:"Paschim Maharashtra Prant", Status:"Active", Password:"demo123" },
@@ -269,6 +274,17 @@ const API = (function () {
       case "deleteMembership": {
         SAMPLE.membership = SAMPLE.membership.filter(r => r.ID !== p.id);
         return { message: "Membership deleted successfully" };
+      }
+      case "getNotifyPeopleList":
+        return SAMPLE.notifyPeople;
+      case "addNotifyPerson": {
+        const row = { ID: "demo-np" + Date.now(), Name: p.name, Email: p.email };
+        SAMPLE.notifyPeople.unshift(row);
+        return { message: "जोडले" };
+      }
+      case "deleteNotifyPerson": {
+        SAMPLE.notifyPeople = SAMPLE.notifyPeople.filter(r => r.ID !== p.id);
+        return { message: "काढले" };
       }
       default:
         return [];

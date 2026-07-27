@@ -81,27 +81,52 @@ function clearSession() {
   sessionStorage.removeItem(SESSION_KEY);
 }
 function showLogin(message) {
-  document.getElementById("loginScreen").style.display = "flex";
-  document.getElementById("dashboardScreen").style.display = "none";
+  const loginEl = document.getElementById("loginScreen");
+  const dashEl = document.getElementById("dashboardScreen");
+  if (loginEl) loginEl.style.display = "flex";
+  if (dashEl) dashEl.style.display = "none";
   if (message) {
     const errBox = document.getElementById("loginError");
-    errBox.textContent = message;
-    errBox.classList.add("show");
+    if (errBox) {
+      errBox.textContent = message;
+      errBox.classList.add("show");
+    } else {
+      console.error("[app-core] #loginError not found; message was:", message);
+    }
   }
 }
 function showDashboard(user) {
-  document.getElementById("loginScreen").style.display = "none";
-  document.getElementById("dashboardScreen").style.display = "block";
+  const loginEl = document.getElementById("loginScreen");
+  const dashEl = document.getElementById("dashboardScreen");
+  if (loginEl) loginEl.style.display = "none";
+  if (dashEl) dashEl.style.display = "block";
   currentUser = user;
   if (!user.isMahanagar && user.bhag) {
     currentJilha = user.bhag;
   }
   const displayName = user.name || user.email || "—";
-  document.getElementById("userChip").textContent = `${displayName} · ${user.role || ""}`;
+  const userChipEl = document.getElementById("userChip");
+  if (userChipEl) userChipEl.textContent = `${displayName} · ${user.role || ""}`;
   initDashboard();
 }
 
-document.getElementById("loginForm").addEventListener("submit", async (e) => {
+// Null-safe addEventListener: logs an error instead of throwing if the
+// element doesn't exist (e.g. its partial hasn't finished injecting, or a
+// filename typo means it 404'd). This is the fix for a nasty failure mode:
+// a single top-level `document.getElementById(x).addEventListener(...)`
+// throwing would previously stop EVERY statement after it in this file —
+// including the boot() call at the very bottom that shows the login
+// screen — leaving the whole page blank with no visible error to the user.
+function on(id, event, handler) {
+  const el = document.getElementById(id);
+  if (!el) {
+    console.error(`[app-core] Element #${id} not found — its "${event}" handler was not attached. Check that its partial loaded correctly.`);
+    return;
+  }
+  el.addEventListener(event, handler);
+}
+
+on("loginForm", "submit", async (e) => {
   e.preventDefault();
   const email = document.getElementById("loginEmail").value.trim();
   const password = document.getElementById("loginPassword").value;
@@ -120,7 +145,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
   showDashboard(result.user);
 });
 
-document.getElementById("togglePw").addEventListener("click", () => {
+on("togglePw", "click", () => {
   const pw = document.getElementById("loginPassword");
   const btn = document.getElementById("togglePw");
   const show = pw.type === "password";
@@ -128,7 +153,7 @@ document.getElementById("togglePw").addEventListener("click", () => {
   btn.textContent = show ? "लपवा" : "दाखवा";
 });
 
-document.getElementById("logoutBtn").addEventListener("click", async () => {
+on("logoutBtn", "click", async () => {
   await API.logout();
   clearSession();
   dashboardInitDone = false;
@@ -148,7 +173,7 @@ API.onUnauthorized((message) => {
    Every module-*.js file below uses this instead of writing its own
    form-handling logic. */
 
-function setupAddForm({ toggleBtnId, formId, msgId, jilhaId, nagarId, action, updateAction, editIdFieldId, fieldMap, requiredKeys, includeMahanagar, onSuccess }) {
+function setupAddForm({ toggleBtnId, formId, msgId, jilhaId, nagarId, action, updateAction, editIdFieldId, fieldMap, multiSelectFieldMap, requiredKeys, includeMahanagar, onSuccess }) {
   const toggleBtn = document.getElementById(toggleBtnId);
   const form = document.getElementById(formId);
 
@@ -185,6 +210,13 @@ function setupAddForm({ toggleBtnId, formId, msgId, jilhaId, nagarId, action, up
       const el = document.getElementById(fieldMap[key]);
       data[key] = el ? el.value.trim() : "";
     });
+
+    if (multiSelectFieldMap) {
+      Object.keys(multiSelectFieldMap).forEach(key => {
+        const el = document.getElementById(multiSelectFieldMap[key]);
+        data[key] = el ? Array.from(el.selectedOptions).map(o => o.value).join(",") : "";
+      });
+    }
 
     const editId = editIdFieldId ? document.getElementById(editIdFieldId).value : "";
     const isEdit = !!editId;
@@ -259,6 +291,20 @@ async function deleteRecord(action, id, onSuccess) {
   if (onSuccess) onSuccess();
 }
 
+// Populates a <select multiple> with every person in the NotifyPeople
+// sheet, value=Email, label="Name (Email)". Used by every add-form that
+// lets the person choose who gets a Calendar invite for that event.
+async function populateNotifyMultiSelect(selectId) {
+  const sel = document.getElementById(selectId);
+  if (!sel) return;
+  const people = await API.call("getNotifyPeopleList", {});
+  if (!people || !people.length) {
+    sel.innerHTML = `<option disabled>अजून कोणीही जोडलेलं नाही ("सूचना यादी" टॅबमधून जोडा)</option>`;
+    return;
+  }
+  sel.innerHTML = people.map(p => `<option value="${p.Email}">${p.Name} (${p.Email})</option>`).join("");
+}
+
 /* ================= DASHBOARD INIT (runs once per session, after login) ================= */
 
 let dashboardInitDone = false;
@@ -299,7 +345,8 @@ function initDashboard() {
     ["Active Forms", setupActiveFormsModule],
     ["College List", setupCollegeListModule],
     ["Membership", setupMembershipModule],
-    ["Mahanagar Upakram", setupMahanagarUpakramModule]
+    ["Mahanagar Upakram", setupMahanagarUpakramModule],
+    ["Notify People", setupNotifyPeopleModule]
   ];
   moduleSetups.forEach(([name, fn]) => {
     try {
@@ -357,6 +404,7 @@ function refreshActivePanel() {
     if (activeTab === "membership") loadMembership();
     if (activeTab === "mahanagar-karya") loadMahanagarSubtab(currentMahanagarSubtab);
     if (activeTab === "activity-logs") loadActivityLogs();
+    if (activeTab === "notify-people") loadNotifyPeople();
   } catch (err) {
     console.error(`Tab load failed: ${activeTab}`, err);
   }
@@ -369,15 +417,20 @@ function refreshActivePanel() {
 // everything it needs already in place.
 
 (async function boot() {
-  const existing = getSession();
-  if (existing && existing.token) {
-    API.restoreToken(existing.token);
-    const check = await API.validateSession();
-    if (check && check.valid) {
-      showDashboard(existing.user);
-      return;
+  try {
+    const existing = getSession();
+    if (existing && existing.token) {
+      API.restoreToken(existing.token);
+      const check = await API.validateSession();
+      if (check && check.valid) {
+        showDashboard(existing.user);
+        return;
+      }
+      clearSession();
     }
-    clearSession();
+    showLogin();
+  } catch (err) {
+    console.error("[app-core] boot() failed:", err);
+    showLogin("अनपेक्षित त्रुटी आली. कृपया पान रिफ्रेश करा.");
   }
-  showLogin();
 })();

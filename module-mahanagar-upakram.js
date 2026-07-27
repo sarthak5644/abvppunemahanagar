@@ -47,27 +47,33 @@ function setupMahanagarUpakramModule() {
     jilhaId: "addPravasJilha", action: "addPravas", includeMahanagar: true,
     updateAction: "updatePravas", editIdFieldId: "addPravasEditId",
     fieldMap: { date: "addPravasDate", personName: "addPravasPerson", fromPlace: "addPravasFrom", toPlace: "addPravasTo", jilha: "addPravasJilha", purpose: "addPravasPurpose", contact: "addPravasContact", status: "addPravasStatus", startTime: "addPravasStartTime", endTime: "addPravasEndTime" },
+    multiSelectFieldMap: { guestEmails: "addPravasNotify" },
     requiredKeys: ["date", "personName", "fromPlace", "toPlace"],
     onSuccess: () => loadMahanagarSubtab("pravas")
   });
+  populateNotifyMultiSelect("addPravasNotify");
 
   baithakFormApi = setupAddForm({
     toggleBtnId: "toggleAddBaithak", formId: "addBaithakForm", msgId: "addBaithakMsg",
     jilhaId: "addBaithakJilha", nagarId: "addBaithakNagar", action: "addBaithak", includeMahanagar: true,
     updateAction: "updateBaithak", editIdFieldId: "addBaithakEditId",
     fieldMap: { date: "addBaithakDate", jilha: "addBaithakJilha", nagar: "addBaithakNagar", vishay: "addBaithakVishay", sthal: "addBaithakSthal", status: "addBaithakStatus", startTime: "addBaithakStartTime", endTime: "addBaithakEndTime" },
+    multiSelectFieldMap: { guestEmails: "addBaithakNotify" },
     requiredKeys: ["date", "jilha", "vishay"],
     onSuccess: () => loadMahanagarSubtab("baithak")
   });
+  populateNotifyMultiSelect("addBaithakNotify");
 
   abhiyanFormApi = setupAddForm({
     toggleBtnId: "toggleAddAbhiyan", formId: "addAbhiyanForm", msgId: "addAbhiyanMsg",
     jilhaId: "addAbhiyanJilha", action: "addAbhiyan", includeMahanagar: true,
     updateAction: "updateAbhiyan", editIdFieldId: "addAbhiyanEditId",
     fieldMap: { abhiyanName: "addAbhiyanName", jilha: "addAbhiyanJilha", startDate: "addAbhiyanStart", endDate: "addAbhiyanEnd", status: "addAbhiyanStatus" },
+    multiSelectFieldMap: { guestEmails: "addAbhiyanNotify" },
     requiredKeys: ["abhiyanName", "jilha", "startDate"],
     onSuccess: () => loadMahanagarSubtab("abhiyan")
   });
+  populateNotifyMultiSelect("addAbhiyanNotify");
 }
 
 async function loadMahanagarSubtab(name) {

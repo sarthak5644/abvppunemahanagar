@@ -1,0 +1,94 @@
+<h2 class="section-title">महानगर उपक्रम</h2>
+<p class="section-note eng">Pravas, Baithak &amp; Abhiyan tracking across the Mahanagar</p>
+
+<nav class="subtabs" id="mahanagarSubtabs">
+  <button data-subtab="pravas" class="active">प्रवास</button>
+  <button data-subtab="baithak">बैठक</button>
+  <button data-subtab="abhiyan">अभियान</button>
+</nav>
+
+<div class="filter-row">
+  <select id="mahaJilhaFilter"><option value="All">महानगर</option></select>
+  <select id="mahaNagarFilter"><option value="All">सर्व नगर</option></select>
+</div>
+
+<!-- Pravas -->
+<div class="subpanel active" id="subpanel-pravas">
+  <div class="filter-row">
+    <button type="button" class="add-toggle-btn" id="toggleAddPravas">+ प्रवास जोडा</button>
+  </div>
+  <form id="addPravasForm" class="add-form">
+    <input type="hidden" id="addPravasEditId" value="">
+    <div class="grid">
+      <input type="date" id="addPravasDate" required>
+      <input type="text" id="addPravasPerson" placeholder="Person Name" required>
+      <input type="text" id="addPravasFrom" placeholder="From Place" required>
+      <input type="text" id="addPravasTo" placeholder="To Place" required>
+      <select id="addPravasJilha" required></select>
+      <input type="text" id="addPravasPurpose" placeholder="Purpose">
+      <input type="tel" id="addPravasContact" placeholder="Contact">
+      <select id="addPravasStatus">
+        <option value="Planned">Planned</option>
+        <option value="Completed">Completed</option>
+        <option value="Cancelled">Cancelled</option>
+      </select>
+      <input type="time" id="addPravasStartTime" placeholder="सुरुवात वेळ">
+      <input type="time" id="addPravasEndTime" placeholder="शेवट वेळ">
+    </div>
+    <button type="submit" class="btn">Add Pravas</button>
+    <div class="add-form-msg" id="addPravasMsg"></div>
+  </form>
+  <div id="pravasTableWrap"></div>
+</div>
+
+<!-- Baithak -->
+<div class="subpanel" id="subpanel-baithak">
+  <div class="filter-row">
+    <button type="button" class="add-toggle-btn" id="toggleAddBaithak">+ बैठक जोडा</button>
+  </div>
+  <form id="addBaithakForm" class="add-form">
+    <input type="hidden" id="addBaithakEditId" value="">
+    <div class="grid">
+      <input type="date" id="addBaithakDate" required>
+      <select id="addBaithakJilha" required></select>
+      <select id="addBaithakNagar"></select>
+      <input type="text" id="addBaithakVishay" placeholder="विषय (Vishay)" required>
+      <input type="text" id="addBaithakSthal" placeholder="स्थळ (Sthal)">
+      <select id="addBaithakStatus">
+        <option value="Planned">Planned</option>
+        <option value="Completed">Completed</option>
+        <option value="Cancelled">Cancelled</option>
+      </select>
+      <input type="time" id="addBaithakStartTime" placeholder="सुरुवात वेळ">
+      <input type="time" id="addBaithakEndTime" placeholder="शेवट वेळ">
+    </div>
+    <button type="submit" class="btn">जतन करा</button>
+    <div class="add-form-msg" id="addBaithakMsg"></div>
+  </form>
+  <div id="baithakTableWrap"></div>
+</div>
+
+<!-- Abhiyan -->
+<div class="subpanel" id="subpanel-abhiyan">
+  <div class="filter-row">
+    <button type="button" class="add-toggle-btn" id="toggleAddAbhiyan">+ अभियान जोडा</button>
+  </div>
+  <form id="addAbhiyanForm" class="add-form">
+    <input type="hidden" id="addAbhiyanEditId" value="">
+    <div class="grid">
+      <input type="text" id="addAbhiyanName" placeholder="अभियान नाव" required>
+      <select id="addAbhiyanJilha" required></select>
+      <input type="date" id="addAbhiyanStart" required>
+      <input type="date" id="addAbhiyanEnd">
+      <select id="addAbhiyanStatus">
+        <option value="Planned">Planned</option>
+        <option value="Ongoing">Ongoing</option>
+        <option value="Completed">Completed</option>
+        <option value="Cancelled">Cancelled</option>
+      </select>
+    </div>
+    <button type="submit" class="btn">जतन करा</button>
+    <div class="add-form-msg" id="addAbhiyanMsg"></div>
+  </form>
+  <div id="abhiyanTableWrap"></div>
+</div>
