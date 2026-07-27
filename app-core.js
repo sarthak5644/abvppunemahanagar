@@ -213,8 +213,7 @@ function setupAddForm({ toggleBtnId, formId, msgId, jilhaId, nagarId, action, up
 
     if (multiSelectFieldMap) {
       Object.keys(multiSelectFieldMap).forEach(key => {
-        const el = document.getElementById(multiSelectFieldMap[key]);
-        data[key] = el ? Array.from(el.selectedOptions).map(o => o.value).join(",") : "";
+        data[key] = getCheckedNotifyEmails(multiSelectFieldMap[key]);
       });
     }
 
@@ -291,18 +290,35 @@ async function deleteRecord(action, id, onSuccess) {
   if (onSuccess) onSuccess();
 }
 
-// Populates a <select multiple> with every person in the NotifyPeople
-// sheet, value=Email, label="Name (Email)". Used by every add-form that
-// lets the person choose who gets a Calendar invite for that event.
-async function populateNotifyMultiSelect(selectId) {
-  const sel = document.getElementById(selectId);
-  if (!sel) return;
+// Fills a checkbox-list container with one checkbox per person in the
+// NotifyPeople sheet. Unlike a <select multiple> (which needs a
+// non-obvious Ctrl/Cmd+click to select more than one), a checkbox makes it
+// visually unambiguous: ✓ ticked = that person gets this event's Calendar
+// invite, unticked = they see/hear nothing about it.
+async function populateNotifyMultiSelect(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
   const people = await API.call("getNotifyPeopleList", {});
   if (!people || !people.length) {
-    sel.innerHTML = `<option disabled>अजून कोणीही जोडलेलं नाही ("सूचना यादी" टॅबमधून जोडा)</option>`;
+    container.innerHTML = `<div class="empty-state" style="padding:12px;">अजून कोणीही जोडलेलं नाही ("सूचना यादी" टॅबमधून जोडा)</div>`;
     return;
   }
-  sel.innerHTML = people.map(p => `<option value="${p.Email}">${p.Name} (${p.Email})</option>`).join("");
+  container.innerHTML = people.map((p, i) => `
+    <label class="notify-check-row">
+      <input type="checkbox" value="${p.Email}" data-notify-checkbox>
+      <span>${p.Name} (${p.Email})</span>
+    </label>
+  `).join("");
+}
+
+// Reads which checkboxes are ticked inside a notify-check-list container
+// and returns their emails as a comma-separated string.
+function getCheckedNotifyEmails(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return "";
+  return Array.from(container.querySelectorAll("input[data-notify-checkbox]:checked"))
+    .map(cb => cb.value)
+    .join(",");
 }
 
 /* ================= DASHBOARD INIT (runs once per session, after login) ================= */
