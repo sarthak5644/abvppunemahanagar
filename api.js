@@ -14,12 +14,9 @@
      automatically to every call/write — callers never
      handle it directly.
 
-   CONFIG: paste your deployed Apps Script Web App URL below.
-   Leave blank ("") to run the whole site on bundled sample
-   data (useful for designing the frontend before the sheet
-   / script is wired up).
+   
 ========================================================= */
- // e.g. "https://script.google.com/macros/s/XXXXX/exec"
+ 
 
 /* =========================================================
    API.JS — all communication with the Google Apps Script
@@ -37,13 +34,28 @@
      automatically to every call/write — callers never
      handle it directly.
 
-   CONFIG: paste your deployed Apps Script Web App URL below.
-   Leave blank ("") to run the whole site on bundled sample
-   data (useful for designing the frontend before the sheet
-   / script is wired up).
+========================================================= */
+
+
+/* =========================================================
+   API.JS — all communication with the Google Apps Script
+   backend lives here. Nothing else in the app should call
+   fetch() directly.
+
+   SESSION MODEL:
+   - login(email, password) gets a short-lived token back
+     from the backend (stored server-side in CacheService,
+     max 6h lifetime — Apps Script's hard ceiling).
+   - Every other action must include that token. The backend
+     rejects anything without a valid, unexpired token with
+     { error:"UNAUTHORIZED", needsLogin:true }.
+   - This module holds the token in memory and attaches it
+     automatically to every call/write — callers never
+     handle it directly.
+
+  
 ========================================================= */
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzMTVgxGwXK6OkV2wGjTtpHiaP2VqXV0TQqukODDNrwiZf38H2Z2s5BLTAR4RoN4vNw/exec";
-
 const API = (function () {
 
   let sessionToken = null;
@@ -110,8 +122,8 @@ const API = (function () {
       {ID:"demo-m2", Date:"2026-07-05", "Institution Name":"MIT कॉलेज ऑफ इंजिनिअरिंग", "Institution Type":"College", Jilha:"कोथरूड", Nagar:"कर्वेनगर", "Member Count":30, "Amount Collected":1500, "Handled By":"Sneha More"}
     ],
     notifyPeople: [
-      {ID:"demo-np1", Name:"Sarthak", Email:"sarthakvelapure5644@gmail.com"},
-      {ID:"demo-np2", Name:"Amogh", Email:"amogh4010@gmail.com"}
+      {ID:"demo-np1", Name:"Sarthak", Email:"sarthakvelapure5644@gmail.com", Jababdari:"पुणे महानगर कार्यालय मंत्री", "Academic Year":"2025-26"},
+      {ID:"demo-np2", Name:"Amogh", Email:"amogh4010@gmail.com", Jababdari:"पुणे महानगर संगठन मंत्री", "Academic Year":"2025-26"}
     ],
     demoUsers: [
       { "Bhag/Jilha":"मध्य पुणे", Name:"Sarthak", Email:"sarthakvelapure5644@gmail.com", Role:"पुणे महानगर कार्यालय मंत्री", Prant:"Paschim Maharashtra Prant", Status:"Active", Password:"demo123" },
@@ -278,7 +290,7 @@ const API = (function () {
       case "getNotifyPeopleList":
         return SAMPLE.notifyPeople;
       case "addNotifyPerson": {
-        const row = { ID: "demo-np" + Date.now(), Name: p.name, Email: p.email };
+        const row = { ID: "demo-np" + Date.now(), Name: p.name, Email: p.email, Jababdari: p.jababdari, "Academic Year": p.academicYear };
         SAMPLE.notifyPeople.unshift(row);
         return { message: "जोडले" };
       }
