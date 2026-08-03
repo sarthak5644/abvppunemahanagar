@@ -7,10 +7,14 @@
 let notifyPeopleFormApi = null;
 
 function setupNotifyPeopleModule() {
+  document.getElementById("addNPAcademicYear").innerHTML =
+    `<option value="">शैक्षणिक वर्ष (ऐच्छिक)</option>` +
+    academicYearOptions().map(y => `<option value="${y}">${y}</option>`).join("");
+
   notifyPeopleFormApi = setupAddForm({
     toggleBtnId: "toggleAddNotifyPerson", formId: "addNotifyPersonForm", msgId: "addNPMsg",
     action: "addNotifyPerson",
-    fieldMap: { name: "addNPName", email: "addNPEmail" },
+    fieldMap: { name: "addNPName", email: "addNPEmail", jababdari: "addNPJababdari", academicYear: "addNPAcademicYear" },
     requiredKeys: ["name", "email"],
     onSuccess: () => loadNotifyPeople()
   });
@@ -24,12 +28,12 @@ async function loadNotifyPeople() {
     return;
   }
   wrap.innerHTML = `<table class="data-table">
-    <tr><th>नाव</th><th>ईमेल</th><th>Action</th></tr>
+    <tr><th>नाव</th><th>ईमेल</th><th>जबाबदारी</th><th>शैक्षणिक वर्ष</th><th>Action</th></tr>
     ${rows.map(r => {
       const actionCell = r.ID
         ? `<button type="button" class="btn ghost row-delete-btn" data-id="${r.ID}">Delete</button>`
         : `<span class="eng" style="color:var(--muted);font-size:11px;">(जुनी नोंद)</span>`;
-      return `<tr><td>${r.Name || ""}</td><td>${r.Email || ""}</td><td class="row-actions">${actionCell}</td></tr>`;
+      return `<tr><td>${r.Name || ""}</td><td>${r.Email || ""}</td><td>${r.Jababdari || ""}</td><td>${r["Academic Year"] || ""}</td><td class="row-actions">${actionCell}</td></tr>`;
     }).join("")}
   </table>`;
 
