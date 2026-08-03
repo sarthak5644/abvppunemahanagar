@@ -306,7 +306,7 @@ async function populateNotifyMultiSelect(containerId) {
   container.innerHTML = people.map((p, i) => `
     <label class="notify-check-row">
       <input type="checkbox" value="${p.Email}" data-notify-checkbox>
-      <span>${p.Name} (${p.Email})</span>
+      <span>${p.Name}${p.Jababdari ? " — " + p.Jababdari : ""} (${p.Email})</span>
     </label>
   `).join("");
 }
